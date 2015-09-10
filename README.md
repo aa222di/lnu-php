@@ -1,4 +1,4 @@
-# Repository for Webdevelopment with PHP on Linnaeus University
+# Repository for Web development with PHP on Linnaeus University
 
 For student Amanda Marie Åberg | 880920
 

@@ -3,10 +3,22 @@
 class DateTimeView {
 
 
-	public function show() {
+   /**
+	* Shows date and time
+	* @param $timestamp int
+	* @return string
+	*/
+	public function show($timestamp = null) {
 
-		$timeString = 'TODO, Write servertime here...';
+		// Set to current time if not set
+		if (!isset($timestamp)) {
+			$timestamp = time();
+		}
 
-		return '<p>' . $timeString . '</p>';
+		$timeString = date('l, \t\h\e jS \of F Y, \T\h\e \t\i\m\e \i\s H:i:s', $timestamp);
+
+		return '<p>' . $timeString . '</p>' . time();
+
+
 	}
 }
