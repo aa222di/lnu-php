@@ -1,9 +1,14 @@
 <?php
 
+namespace view;
 
 class LayoutView {
+
+  public function __construct( \model\Login $loginModel) {
+    $this->loginModel = $loginModel;
+  }
   
-  public function render($isLoggedIn, LoginView $v, DateTimeView $dtv) {
+  public function render( LoginView $v, DateTimeView $dtv ) {
     echo '<!DOCTYPE html>
       <html>
         <head>
@@ -12,7 +17,7 @@ class LayoutView {
         </head>
         <body>
           <h1>Assignment 2</h1>
-          ' . $this->renderIsLoggedIn($isLoggedIn) . '
+          ' . $this->renderIsLoggedIn() . '
           
           <div class="container">
               ' . $v->response() . '
@@ -24,8 +29,10 @@ class LayoutView {
     ';
   }
   
-  private function renderIsLoggedIn($isLoggedIn) {
-    if ($isLoggedIn) {
+  private function renderIsLoggedIn() {
+    $boolean = $this->loginModel->checkLoginStatus();
+    var_dump($boolean);
+    if ($boolean) {
       return '<h2>Logged in</h2>';
     }
     else {

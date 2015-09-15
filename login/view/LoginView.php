@@ -1,4 +1,5 @@
 <?php
+namespace view;
 
 class LoginView {
 	private static $login = 'LoginView::Login';
@@ -9,8 +10,16 @@ class LoginView {
 	private static $cookiePassword = 'LoginView::CookiePassword';
 	private static $keep = 'LoginView::KeepMeLoggedIn';
 	private static $messageId = 'LoginView::Message';
+	private static $loggedIn = 'LoginView::LoggedIn';
 
-	
+	private $controller;
+	private $loginModel;
+
+	public function __construct( \model\Login $loginModel) {
+		$this->controller = new \controller\LoginController($loginModel);
+		$this->loginModel = $loginModel;
+	}
+
 
 	/**
 	 * Create HTTP response
@@ -22,7 +31,27 @@ class LoginView {
 	public function response() {
 		$message = '';
 		
-		$response = $this->generateLoginFormHTML($message);
+		if(isset($_POST[self::$login])) {
+
+			try {
+				$login = $this->controller->login($_POST[self::$name], $_POST[self::$password]);
+			}
+			catch( \Exception $e ) {
+				return $this->generateLoginFormHTML($e->getMessage(), $_POST[self::$name]);
+			}
+			
+
+			if ($this->loginModel->checkLoginStatus()) {
+				$response = $this->generateLogoutButtonHTML('Welcome');
+			}
+			else {
+				return $this->generateLoginFormHTML('Wrong name or password', $_POST[self::$name]);
+			}
+		}
+
+		else {
+			$response = $this->generateLoginFormHTML($message);
+		}
 		//$response .= $this->generateLogoutButtonHTML($message);
 		return $response;
 	}
@@ -46,7 +75,7 @@ class LoginView {
 	* @param $message, String output message
 	* @return  void, BUT writes to standard output!
 	*/
-	private function generateLoginFormHTML($message) {
+	private function generateLoginFormHTML($message, $username = null) {
 		return '
 			<form method="post" > 
 				<fieldset>
@@ -54,7 +83,7 @@ class LoginView {
 					<p id="' . self::$messageId . '">' . $message . '</p>
 					
 					<label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="" />
+					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $username . '" />
 
 					<label for="' . self::$password . '">Password :</label>
 					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
