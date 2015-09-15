@@ -9,9 +9,9 @@ namespace model;
 	
 
 		public function __construct( UserCollection $UserCollection ) {
-
 			$this->UserCollection = $UserCollection;
-
+			//make sure we have a session
+			assert(isset($_SESSION));
 		}
 
 
@@ -21,14 +21,46 @@ namespace model;
 		*/
 		public function login($username, $password) {
 			// Try to authenticate user
-			$loggedIn = $this->authenticate($username, $password);
-			
-			// If user exists and is authenticated, store user in $_SESSION
-			if ($loggedIn) {
-				$this->storeUserInSession($username);
+			if(!$username) {
+				throw new \Exception("Username is missing");
 			}
 
+			elseif(!$password) {
+				throw new \Exception("Password is missing");
+			}
+
+			elseif ($this->checkLoginStatus()) {
+				return true;
+			}
+
+			else {
+				$loggedIn = $this->authenticate($username, $password);
+				
+				// If user exists and is authenticated, store user in $_SESSION
+				if ($loggedIn) {
+					$this->storeUserInSession($username);
+					return "Welcome";
+				}
+
+				else {
+					throw new \Exception("Wrong name or password");
+				}
+			}
+			
 			return true;
+		}
+
+		/**
+		* Logs out a user
+		* @return void
+		*/
+		public function logout() {
+			if(isset($_SESSION[self::$userInSession])) {
+				unset($_SESSION[self::$userInSession]);
+				return "Bye bye!";
+			}
+		
+			return;
 		}
 
 		/**
@@ -65,11 +97,6 @@ namespace model;
 		* 
 		*/
 		private function storeUserInSession($username) {
-			
-			if (session_status() == PHP_SESSION_NONE) {
-				echo "Hej";
-    			session_start();
-			}
 
 			$_SESSION[self::$userInSession] = $username;
 		}

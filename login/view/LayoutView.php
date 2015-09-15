@@ -8,7 +8,7 @@ class LayoutView {
     $this->loginModel = $loginModel;
   }
   
-  public function render( LoginView $v, DateTimeView $dtv ) {
+  public function render( LoginView $v, DateTimeView $dtv, $message ) {
     echo '<!DOCTYPE html>
       <html>
         <head>
@@ -20,7 +20,7 @@ class LayoutView {
           ' . $this->renderIsLoggedIn() . '
           
           <div class="container">
-              ' . $v->response() . '
+              ' . $v->response($message) . '
               
               ' . $dtv->show() . '
           </div>
@@ -30,9 +30,7 @@ class LayoutView {
   }
   
   private function renderIsLoggedIn() {
-    $boolean = $this->loginModel->checkLoginStatus();
-    var_dump($boolean);
-    if ($boolean) {
+    if ($this->loginModel->checkLoginStatus()) {
       return '<h2>Logged in</h2>';
     }
     else {

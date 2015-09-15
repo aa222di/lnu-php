@@ -12,11 +12,11 @@ class LoginView {
 	private static $messageId = 'LoginView::Message';
 	private static $loggedIn = 'LoginView::LoggedIn';
 
-	private $controller;
+
 	private $loginModel;
 
 	public function __construct( \model\Login $loginModel) {
-		$this->controller = new \controller\LoginController($loginModel);
+		
 		$this->loginModel = $loginModel;
 	}
 
@@ -28,32 +28,52 @@ class LoginView {
 	 *
 	 * @return  void BUT writes to standard output and cookies!
 	 */
-	public function response() {
-		$message = '';
+	public function response( $message = null ) {
 		
-		if(isset($_POST[self::$login])) {
-
-			try {
-				$login = $this->controller->login($_POST[self::$name], $_POST[self::$password]);
-			}
-			catch( \Exception $e ) {
-				return $this->generateLoginFormHTML($e->getMessage(), $_POST[self::$name]);
-			}
+		if($this->loginModel->checkLoginStatus()) {
 			
-
-			if ($this->loginModel->checkLoginStatus()) {
-				$response = $this->generateLogoutButtonHTML('Welcome');
-			}
-			else {
-				return $this->generateLoginFormHTML('Wrong name or password', $_POST[self::$name]);
-			}
+			$response = $this->generateLogoutButtonHTML($message);
 		}
 
 		else {
+
 			$response = $this->generateLoginFormHTML($message);
 		}
-		//$response .= $this->generateLogoutButtonHTML($message);
+		
+		
 		return $response;
+	}
+
+	public function doesUserWantToLogin() {
+
+		if(isset($_POST[self::$login])) {
+			return true;
+		}
+		return false;
+	}
+
+	public function doesUserWantToLogout() {
+
+		if(isset($_POST[self::$logout])) {
+			return true;
+		}
+		return false;
+	}
+
+	public function getUsername() {
+
+		if(isset($_POST[self::$login]) && isset($_POST[self::$name])) {
+			return $_POST[self::$name];
+		}
+		return false;
+	}
+
+	public function getPassword() {
+
+		if(isset($_POST[self::$login]) && isset($_POST[self::$password])) {
+			return $_POST[self::$password];
+		}
+		return false;
 	}
 
 	/**
@@ -75,7 +95,14 @@ class LoginView {
 	* @param $message, String output message
 	* @return  void, BUT writes to standard output!
 	*/
-	private function generateLoginFormHTML($message, $username = null) {
+	private function generateLoginFormHTML($message) {
+		
+		$username = null;
+
+		if (isset($_POST[self::$name])) {
+			$username = $_POST[self::$name];
+		}
+
 		return '
 			<form method="post" > 
 				<fieldset>
