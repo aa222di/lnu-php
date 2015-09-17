@@ -14,41 +14,41 @@ namespace controller;
 
 
 		public function indexAction() {
-			$message = null;
-			// Check with the view for post
 
-			// Dispatch to the right action
 			if( $this->loginView->doesUserWantToLogin() && !$this->loginModel->checkLoginStatus() ) {
 			
-				$message = $this->loginAction($this->loginView->getUsername(), $this->loginView->getPassword());
+				try {
+					$this->loginAction($this->loginView->getUsername(), $this->loginView->getPassword());
+					return $this->loginView->loginMessage();
+				}
+				catch (\exceptions\FailedLoginException $e) {
+					return $this->loginView->handleError();
+				} 
 				
 			}
-			elseif($this->loginView->doesUserWantToLogout()) {
-				$message = $this->logoutAction();
+
+			elseif($this->loginView->doesUserWantToLogout() && $this->loginModel->checkLoginStatus()) {
+				$this->logoutAction();
+				return $this->loginView->logoutMessage();
 			}
+
 			else {
-				return $message;
+				return;
 			}
-			return $message;
+	
 			
 		}
 
 
 		private function loginAction( $username, $password ) {
 
-		
-				try {
-					$message = $this->loginModel->login( $username, $password );
+				if($this->loginModel->login( $username, $password )) {
+					return true;
+				}
+				else {
+					throw new \exceptions\FailedLoginException('Wrong username or password');
 					
-					if( $this->loginView->doesUserWantToStayLoggedIn() ) {
-						$message = $this->stayLoggedInAction();
-					}
 				}
-				catch ( \Exception $e ) {
-					 $message = $e->getMessage();
-				}
-
-				return $message;
 	
 		}
 

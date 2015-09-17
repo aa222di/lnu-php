@@ -49,9 +49,11 @@ class LoginView {
 		return $response;
 	}
 
+
+
 	public function doesUserWantToLogin() {
 
-		if(isset($_POST[self::$login])) {
+		if(isset($_POST[self::$login]) && isset($_POST[self::$password]) && isset($_POST[self::$name])) {
 			return true;
 		}
 		return false;
@@ -87,6 +89,46 @@ class LoginView {
 			return $_POST[self::$password];
 		}
 		return false;
+	}
+
+
+
+	public function loginMessage() {
+
+		return "Welcome";
+
+	}
+
+
+	public function logoutMessage() {
+
+		return "Bye bye!";
+
+	}
+
+
+
+	public function handleError() {
+
+		$message = null;
+
+		if(isset($_POST[self::$login])) {
+			if(empty($_POST[self::$name])) {
+				$message = "Username is missing";
+			}
+			elseif(empty($_POST[self::$password])) {
+				$message = "Password is missing";
+			}
+			else {
+				$message = "Wrong name or password";
+			}
+		}
+		else {
+			$message = "Login button isn't pressed";
+		}
+
+		return $message;
+
 	}
 
 	/**
@@ -136,10 +178,5 @@ class LoginView {
 			</form>
 		';
 	}
-	
-	//CREATE GET-FUNCTIONS TO FETCH REQUEST VARIABLES
-	private function getRequestUserName() {
-		//RETURN REQUEST VARIABLE: USERNAME
-	}
-	
+
 }

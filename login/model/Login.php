@@ -20,34 +20,14 @@ namespace model;
 		* @return boolean
 		*/
 		public function login($username, $password) {
-			// Try to authenticate user
-			if(!$username) {
-				throw new \Exception("Username is missing");
-			}
-
-			elseif(!$password) {
-				throw new \Exception("Password is missing");
-			}
-
-			elseif ($this->checkLoginStatus()) {
-				return true;
-			}
-
-			else {
-				$loggedIn = $this->authenticate($username, $password);
-				
-				// If user exists and is authenticated, store user in $_SESSION
-				if ($loggedIn) {
-					$this->storeUserInSession($username);
-					return "Welcome";
-				}
-
-				else {
-					throw new \Exception("Wrong name or password");
-				}
-			}
 			
-			return true;
+			 if( $this->authenticate($username, $password) ) {
+			 	$this->storeUserInSession($username);
+			 	return true;
+			 }
+
+			 return false;
+				
 		}
 
 		/**
@@ -82,6 +62,9 @@ namespace model;
 		*/
 		public function getTemporaryPassword($password) {
 
+			// generate and store pwd
+
+			// return
 			return password_hash($password, PASSWORD_DEFAULT);
 		
 		}
@@ -94,7 +77,7 @@ namespace model;
 		private function authenticate($username, $password) {
 			$user = $this->UserCollection->getUser($username);
 			
-			if($user) {
+			if( $user ) {
 				return password_verify($password, $user->getPassword());
 			}
 			else {
