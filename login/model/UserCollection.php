@@ -5,8 +5,25 @@ namespace model;
 	class UserCollection {
 
 		private $users = [];
+		public $db;
 
-		public function __construct() {
+		public function __construct( Database $db ) {
+			
+			// Connect to a database
+			$this->db = $db;
+
+			// Create table for users
+			$sql = "CREATE TABLE IF NOT EXISTS `users` (
+  									`username` VARCHAR(20) NOT NULL,
+ 									 `password` VARCHAR(120) NOT NULL,
+ 									 `temp_password` VARCHAR(120) NULL,
+  									PRIMARY KEY (`username`));";
+				try {
+					$this->db->db->exec($sql);
+				}
+				catch(\PDOException $e) {
+    				echo $e->getMessage();//Remove or change message in production code
+    			}
 
 		}
 
@@ -62,6 +79,22 @@ namespace model;
 		*/
 		private function add( User $userToAdd) {
 			$this->users[$userToAdd->getUsername()] = $userToAdd;
+
+			$username =$userToAdd->getUsername();
+			$password =$userToAdd->getPassword();
+
+			$stmt = $this->db->db->prepare("SELECT * FROM users where username = ?");
+		
+			$stmt->execute([$username]);
+			$userExists = $stmt->fetch();
+			if(!$userExists) {
+			
+				$stmt = $this->db->db->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
+				$stmt->bindParam(':username', $username);
+				$stmt->bindParam(':password', $password);
+				$stmt -> execute();
+
+			}
 		}
 
 		

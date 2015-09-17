@@ -53,20 +53,6 @@ namespace controller;
 		}
 
 
-		private function stayLoggedInAction() {
-
-		
-				/*try {
-					$message = $this->loginModel->keepUserLoggedIn();
-				}
-				catch ( \Exception $e ) {
-					 $message = $e->getMessage();
-				}*/
-				$message = "Welcome and you will be remembered";
-
-				return $message;
-	
-		}
 
 		private function logoutAction() {
 			

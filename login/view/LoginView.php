@@ -14,6 +14,7 @@ class LoginView {
 
 
 	private $loginModel;
+	private $loggedInWithCookies = false;
 
 	public function __construct( \model\Login $loginModel) {
 		
@@ -32,8 +33,10 @@ class LoginView {
 		
 		if($this->loginModel->checkLoginStatus()) {
 			if ( $this->doesUserWantToStayLoggedIn() ) {
+				
 				setcookie(self::$cookieName, $_POST[self::$name]);
 				setcookie(self::$cookiePassword, $this->loginModel->getTemporaryPassword($_POST[self::$password]));
+
 
 			}
 			
@@ -56,6 +59,9 @@ class LoginView {
 		if(isset($_POST[self::$login]) && isset($_POST[self::$password]) && isset($_POST[self::$name])) {
 			return true;
 		}
+		elseif (isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword])) {
+			return true;
+		}
 		return false;
 	}
 
@@ -70,6 +76,14 @@ class LoginView {
 	public function doesUserWantToLogout() {
 
 		if(isset($_POST[self::$logout])) {
+			if(isset($_COOKIE[self::$cookieName])) {
+				unset($_COOKIE[self::$cookieName]);
+				setcookie(self::$cookieName, null, -1, '/');
+			}
+			if(isset($_COOKIE[self::$cookiePassword])) {
+				unset($_COOKIE[self::$cookiePassword]);
+			    setcookie(self::$cookiePassword, null, -1, '/');
+			}
 			return true;
 		}
 		return false;
@@ -78,7 +92,13 @@ class LoginView {
 	public function getUsername() {
 
 		if(isset($_POST[self::$login]) && isset($_POST[self::$name])) {
+			$this->loginWithCookies = false;
 			return $_POST[self::$name];
+
+		}
+		elseif (isset($_COOKIE[self::$cookieName])) {
+			$this->loginWithCookies = true;
+			return $_COOKIE[self::$cookieName];
 		}
 		return false;
 	}
@@ -88,6 +108,9 @@ class LoginView {
 		if(isset($_POST[self::$login]) && isset($_POST[self::$password])) {
 			return $_POST[self::$password];
 		}
+		elseif (isset($_COOKIE[self::$cookiePassword])) {
+			return $_COOKIE[self::$cookiePassword];
+		}
 		return false;
 	}
 
@@ -95,7 +118,18 @@ class LoginView {
 
 	public function loginMessage() {
 
-		return "Welcome";
+		if ( $this->doesUserWantToStayLoggedIn() ) {
+		
+			return "Welcome and you will be remembered";		
+
+		}
+		elseif ( $this->loggedInWithCookies ) {
+			return "Welcome back with cookie";
+		}
+		else {
+					return "Welcome";
+		}
+
 
 	}
 

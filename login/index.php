@@ -1,26 +1,26 @@
 <?php
+//MAKE SURE ERRORS ARE SHOWN... MIGHT WANT TO TURN THIS OFF ON A PUBLIC SERVER
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
 
 //INCLUDE THE FILES NEEDED...
 require_once('autoloader.php');
 session_start();
 
-var_dump($_SERVER['HTTP_HOST']);
 
+// CONNECT TO DATABASE
 	$user = 'toeswade';
 	$pwd = 'password123';
 
+// SMALL CHECK TO HAVE THE SAME CODE ON SERVER AND LOCALHOST
 if ($_SERVER['HTTP_HOST'] == 'localhost') {
 	$user = 'root';
 	$pwd = 'root';
 }
+$db = new model\Database( 'localhost', 'toeswade', $user, $pwd);
 
-			try {
-			    $dbh = new PDO('mysql:host=localhost;dbname=toeswade', $user, $pwd);
-			    echo "success connecting";
-			} catch (PDOException $e) {
-			    print "Error!: " . $e->getMessage() . "<br/>";
-			    die();
-			}
+
+
 
 //MAKE SURE ERRORS ARE SHOWN... MIGHT WANT TO TURN THIS OFF ON A PUBLIC SERVER
 error_reporting(E_ALL);
@@ -28,7 +28,7 @@ ini_set('display_errors', 'On');
 
 
 // Create user 
-$users = new model\UserCollection();
+$users = new model\UserCollection($db);
 $users->createNewUser('Admin', 'Password');
 
 // Create the login object
