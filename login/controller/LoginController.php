@@ -18,8 +18,10 @@ namespace controller;
 			// Check with the view for post
 
 			// Dispatch to the right action
-			if($this->loginView->doesUserWantToLogin() && !$this->loginModel->checkLoginStatus()) {
+			if( $this->loginView->doesUserWantToLogin() && !$this->loginModel->checkLoginStatus() ) {
+			
 				$message = $this->loginAction($this->loginView->getUsername(), $this->loginView->getPassword());
+				
 			}
 			elseif($this->loginView->doesUserWantToLogout()) {
 				$message = $this->logoutAction();
@@ -37,10 +39,30 @@ namespace controller;
 		
 				try {
 					$message = $this->loginModel->login( $username, $password );
+					
+					if( $this->loginView->doesUserWantToStayLoggedIn() ) {
+						$message = $this->stayLoggedInAction();
+					}
 				}
 				catch ( \Exception $e ) {
 					 $message = $e->getMessage();
 				}
+
+				return $message;
+	
+		}
+
+
+		private function stayLoggedInAction() {
+
+		
+				/*try {
+					$message = $this->loginModel->keepUserLoggedIn();
+				}
+				catch ( \Exception $e ) {
+					 $message = $e->getMessage();
+				}*/
+				$message = "Welcome and you will be remembered";
 
 				return $message;
 	

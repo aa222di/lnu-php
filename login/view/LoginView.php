@@ -31,6 +31,11 @@ class LoginView {
 	public function response( $message = null ) {
 		
 		if($this->loginModel->checkLoginStatus()) {
+			if ( $this->doesUserWantToStayLoggedIn() ) {
+				setcookie(self::$cookieName, $_POST[self::$name]);
+				setcookie(self::$cookiePassword, $this->loginModel->getTemporaryPassword($_POST[self::$password]));
+
+			}
 			
 			$response = $this->generateLogoutButtonHTML($message);
 		}
@@ -47,6 +52,14 @@ class LoginView {
 	public function doesUserWantToLogin() {
 
 		if(isset($_POST[self::$login])) {
+			return true;
+		}
+		return false;
+	}
+
+	public function doesUserWantToStayLoggedIn() {
+
+		if(isset($_POST[self::$login]) && isset($_POST[self::$keep])) {
 			return true;
 		}
 		return false;

@@ -76,6 +76,16 @@ namespace model;
 			return false;
 		}
 
+		/**
+		* Generates temporary password
+		* @return string
+		*/
+		public function getTemporaryPassword($password) {
+
+			return password_hash($password, PASSWORD_DEFAULT);
+		
+		}
+
 
 		/**
 		* Authenticates a user
