@@ -163,6 +163,9 @@ class LoginView {
 				$message = "Wrong name or password";
 			}
 		}
+		elseif (isset($_COOKIE[self::$cookieName]) || isset($_COOKIE[self::$cookiePassword])) {
+			$message = "Wrong information in cookies";
+		}
 		else {
 			$message = "Login button isn't pressed";
 		}
