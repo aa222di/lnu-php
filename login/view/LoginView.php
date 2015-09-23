@@ -32,12 +32,11 @@ class LoginView {
 	public function response( $message = null ) {
 		
 		if($this->loginModel->checkLoginStatus()) {
+
 			if ( $this->doesUserWantToStayLoggedIn() ) {
-				
-				setcookie(self::$cookieName, $_POST[self::$name]);
-				setcookie(self::$cookiePassword, $this->loginModel->getTemporaryPassword($_POST[self::$password]));
-
-
+				$temp = $this->loginModel->getTemporaryPassword($_POST[self::$name] ,$_POST[self::$password]);
+				setcookie(self::$cookieName, $_POST[self::$name], time() + (30 * 24 * 60 * 60)); 
+				setcookie(self::$cookiePassword, $temp , time() + (30 * 24 * 60 * 60));
 			}
 			
 			$response = $this->generateLogoutButtonHTML($message);
@@ -57,6 +56,7 @@ class LoginView {
 	public function doesUserWantToLogin() {
 
 		if(isset($_POST[self::$login]) && isset($_POST[self::$password]) && isset($_POST[self::$name])) {
+
 			return true;
 		}
 		elseif (isset($_COOKIE[self::$cookieName]) && isset($_COOKIE[self::$cookiePassword])) {
@@ -76,18 +76,23 @@ class LoginView {
 	public function doesUserWantToLogout() {
 
 		if(isset($_POST[self::$logout])) {
+
 			if(isset($_COOKIE[self::$cookieName])) {
 				unset($_COOKIE[self::$cookieName]);
-				setcookie(self::$cookieName, null, -1, '/');
+				setcookie(self::$cookieName, "", time() - 3600);
 			}
+
 			if(isset($_COOKIE[self::$cookiePassword])) {
 				unset($_COOKIE[self::$cookiePassword]);
-			    setcookie(self::$cookiePassword, null, -1, '/');
+			    setcookie(self::$cookiePassword, "", time() - 3600);
 			}
+
 			return true;
 		}
+
 		return false;
 	}
+
 
 	public function getUsername() {
 
@@ -102,6 +107,7 @@ class LoginView {
 		}
 		return false;
 	}
+
 
 	public function getPassword() {
 
@@ -123,7 +129,7 @@ class LoginView {
 			return "Welcome and you will be remembered";		
 
 		}
-		elseif ( $this->loggedInWithCookies ) {
+		elseif ( !isset($_POST[self::$login])) {
 			return "Welcome back with cookie";
 		}
 		else {

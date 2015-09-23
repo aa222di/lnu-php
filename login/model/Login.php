@@ -62,8 +62,8 @@ namespace model;
 		* Generates temporary password
 		* @return string
 		*/
-		public function getTemporaryPassword($password) {
-
+		public function getTemporaryPassword($username ,$password) {
+			$this->storeTemporaryPassword( $username, $this->generateTemporaryPassword($password) );
 			return 	$this->temporaryPassword;
 		
 		}
