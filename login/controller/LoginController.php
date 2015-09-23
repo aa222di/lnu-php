@@ -12,7 +12,13 @@ namespace controller;
 			$this->loginView = $loginView;
 		}
 
-
+		/**
+		 * Checks with the view what the user wants to do and dispatches actions to model, view and self
+		 *
+		 * Should be called from index to start app
+		 *
+		 * @return  string
+		 */
 		public function indexAction() {
 
 			if( $this->loginView->doesUserWantToLogin() && !$this->loginModel->checkLoginStatus() ) {
@@ -39,7 +45,11 @@ namespace controller;
 			
 		}
 
-
+		/**
+		 * Tells model to login user
+		 *
+		 * @return boolean
+		 */
 		private function loginAction( $username, $password ) {
 
 				if($this->loginModel->login( $username, $password )) {
@@ -54,6 +64,11 @@ namespace controller;
 
 
 
+		/**
+		 * Tells model to logout user
+		 *
+		 * @return boolean
+		 */
 		private function logoutAction() {
 			
 			$message = $this->loginModel->logout();

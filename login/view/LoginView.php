@@ -52,7 +52,13 @@ class LoginView {
 	}
 
 
+	// CHECK USER ACTION METHODS
 
+	/**
+	 * Checks if user wants to login or has a cookie that suggests so.
+	 * To be called from controller
+	 * @return  boolean
+	 */
 	public function doesUserWantToLogin() {
 
 		if(isset($_POST[self::$login]) && isset($_POST[self::$password]) && isset($_POST[self::$name])) {
@@ -65,14 +71,12 @@ class LoginView {
 		return false;
 	}
 
-	public function doesUserWantToStayLoggedIn() {
 
-		if(isset($_POST[self::$login]) && isset($_POST[self::$keep])) {
-			return true;
-		}
-		return false;
-	}
-
+	/**
+	 * Checks if user wants to logout
+	 * To be called from controller
+	 * @return  boolean and unsets cookies
+	 */
 	public function doesUserWantToLogout() {
 
 		if(isset($_POST[self::$logout])) {
@@ -93,7 +97,12 @@ class LoginView {
 		return false;
 	}
 
+	// GET USER INPUT METHODS
 
+	/**
+	 * Retrieves username from POST or COOKIE
+	 * @return  string
+	 */
 	public function getUsername() {
 
 		if(isset($_POST[self::$login]) && isset($_POST[self::$name])) {
@@ -109,6 +118,10 @@ class LoginView {
 	}
 
 
+	/**
+	 * Retrieves password from POST or COOKIE
+	 * @return  string
+	 */
 	public function getPassword() {
 
 		if(isset($_POST[self::$login]) && isset($_POST[self::$password])) {
@@ -120,8 +133,26 @@ class LoginView {
 		return false;
 	}
 
+	
+	/**
+	 * Checks if user wants to login or has a cookie that suggests so.
+	 * @return  boolean
+	 */
+	private function doesUserWantToStayLoggedIn() {
+
+		if(isset($_POST[self::$login]) && isset($_POST[self::$keep])) {
+			return true;
+		}
+		return false;
+	}
 
 
+	// GET APP OUTPUT METHODS
+
+	/**
+	 * Handles login success message
+	 * @return  string
+	 */
 	public function loginMessage() {
 
 		if ( $this->doesUserWantToStayLoggedIn() ) {
@@ -139,15 +170,20 @@ class LoginView {
 
 	}
 
-
+	/**
+	 * Handles logout success
+	 * @return  string
+	 */
 	public function logoutMessage() {
 
 		return "Bye bye!";
 
 	}
 
-
-
+	/**
+	 * Handles possible errors and returns userfriendly message
+	 * @return  string
+	 */
 	public function handleError() {
 
 		$message = null;
@@ -173,6 +209,7 @@ class LoginView {
 		return $message;
 
 	}
+
 
 	/**
 	* Generate HTML code on the output buffer for the logout button
