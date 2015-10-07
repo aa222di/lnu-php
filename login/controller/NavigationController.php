@@ -39,9 +39,10 @@ namespace controller;
 
 				$message = $regController->indexAction();
 				
-				if (isset($message)) {
+				if ($this->userCollection->getRegistrationSucceeded()) {
 					$this->navigationView->redirectTo($message, '');
-				}	
+				}
+
 			}
 
 			else if($this->navigationView->doesUserWantToLogin()) {

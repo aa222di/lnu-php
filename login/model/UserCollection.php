@@ -5,6 +5,7 @@ namespace model;
 	class UserCollection {
 
 		private $users = [];
+		private $registrationSucceeded;
 		public $db;
 
 		public function __construct( Database $db ) {
@@ -28,13 +29,14 @@ namespace model;
     		$stmt = $this->db->db->prepare("SELECT username, password FROM users");
     		$stmt -> execute();
     		$this->users = $stmt->fetchAll(\PDO::FETCH_CLASS, '\model\User');
+    		$this->registrationSucceeded = false;
 		}
 
 		/**
 		* Creates new User and adds it to collection
 		* @param $username string
 		* @param $password string
-		* @return void 
+		* @return void or boolean
 		*/
 		public function createNewUser(Anonymous $userToAdd) {
 			$username =$userToAdd->getUsername();
@@ -42,7 +44,10 @@ namespace model;
 			assert(isset($username) && isset($password));
 
 			$User = new User($username, $password);
-			$this->add($User);
+			if($this->add($User)) {
+				$this->registrationSucceeded = true;
+				return true;
+			}
 
 		}
 
@@ -60,10 +65,17 @@ namespace model;
 		}
 
 		/**
-		* @return array 
+		* @return array with \model\User objects
 		*/
 		public function getUserCollection() {
 			return $this->users;
+		}
+
+		/**
+		* @return boolean 
+		*/
+		public function getRegistrationSucceeded() {
+			return $this->registrationSucceeded;
 		}
 
 

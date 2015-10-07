@@ -25,7 +25,6 @@ namespace controller;
 				if($user) {
 					try {
 						$this->userCollection->createNewUser($user);
-
 						return $this->registrationView->registrationSuccess();
 					}
 					catch (\exceptions\FailedRegistrationException $e) {
@@ -39,6 +38,8 @@ namespace controller;
 			}
 			return;
 		}
+
+
 
 
 
