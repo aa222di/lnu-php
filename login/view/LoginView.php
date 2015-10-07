@@ -1,7 +1,7 @@
 <?php
 namespace view;
 
-class LoginView {
+class LoginView implements IView {
 	private static $login = 'LoginView::Login';
 	private static $logout = 'LoginView::Logout';
 	private static $name = 'LoginView::UserName';
@@ -97,13 +97,38 @@ class LoginView {
 		return false;
 	}
 
+
+	/**
+	 * Retrieves username and password 
+	 * @return  model\User $User or boolean
+	 */
+	public function getUserCredentials() {
+
+		$username = $this->getUsername();
+		$password = $this->getPassword();
+		if($password && $username) {
+			return new \model\Anonymous($username, $password);
+		}
+		elseif (!$password) {
+			$password = $this->getTempPassword();
+
+			if($password && $username) {
+				return new \model\Anonymous($username, $password);
+			}
+		}
+		else {
+			return false;
+		}
+	}
+
+
 	// GET USER INPUT METHODS
 
 	/**
 	 * Retrieves username from POST or COOKIE
-	 * @return  string
+	 * @return  string or boolean
 	 */
-	public function getUsername() {
+	private function getUsername() {
 
 		if(isset($_POST[self::$login]) && isset($_POST[self::$name])) {
 			$this->loginWithCookies = false;
@@ -120,14 +145,24 @@ class LoginView {
 
 	/**
 	 * Retrieves password from POST or COOKIE
-	 * @return  string
+	 * @return  string or boolean
 	 */
-	public function getPassword() {
+	private function getPassword() {
 
 		if(isset($_POST[self::$login]) && isset($_POST[self::$password])) {
 			return $_POST[self::$password];
 		}
-		elseif (isset($_COOKIE[self::$cookiePassword])) {
+		return false;
+	}
+
+
+	/**
+	 * Retrieves password COOKIE
+	 * @return  string or boolean
+	 */
+	private function getTempPassword() {
+
+		if (isset($_COOKIE[self::$cookiePassword])) {
 			return $_COOKIE[self::$cookiePassword];
 		}
 		return false;

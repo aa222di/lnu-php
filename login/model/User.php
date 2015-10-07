@@ -6,6 +6,7 @@ namespace model;
 
 		private $username;
 		private $password;
+		private $temp_password;
 
 		/**
 		* Creates a new user
@@ -13,14 +14,18 @@ namespace model;
 		* @param $password string
 		* @return null
 		*/
-		public function __construct($username, $password) {
-		
-			if (!isset($username) || !isset($password)) {
-				throw new \Exception("Both password and username has to be set to create a new user");
-			}
+		public function __construct($username = null, $password = null) {
 
-			$this->username = $username;
-			$this->password = password_hash($password, PASSWORD_DEFAULT);
+
+			// Objects of this class are both created from PDO::FETCH_CLASS and manually
+			// therefore it is necessarry to check how to set the member variables.
+			if(!isset($this->username) && !isset($this->username)) {
+				assert(isset($username) && isset($password));
+				$this->username = $username;
+				$this->password = password_hash($password, PASSWORD_DEFAULT);
+			}
+		
+			
 		}
 
 		/**

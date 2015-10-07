@@ -4,11 +4,11 @@ namespace view;
 
 class LayoutView {
 
-  public function __construct( \model\Login $loginModel) {
+  public function __construct( \model\Login $loginModel ) {
     $this->loginModel = $loginModel;
   }
   
-  public function render( LoginView $v, DateTimeView $dtv, $message ) {
+  public function render( IView $v, DateTimeView $dtv, NavigationView $nav,  $message ) {
     echo '<!DOCTYPE html>
       <html>
         <head>
@@ -16,7 +16,8 @@ class LayoutView {
           <title>Login Example</title>
         </head>
         <body>
-          <h1>Assignment 2</h1>
+          <h1>Assignment 4</h1>
+          <p>' . $nav->response() . '</p>
           ' . $this->renderIsLoggedIn() . '
           
           <div class="container">

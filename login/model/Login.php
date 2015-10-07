@@ -20,11 +20,11 @@ namespace model;
 		* Login a user
 		* @return boolean
 		*/
-		public function login($username, $password) {
+		public function login(Anonymous $toBeLoggedIn) {
 			
-			 if( $this->authenticate($username, $password) ) {
-			 	$this->storeUserInSession($username);
-			 	$this->storeTemporaryPassword( $username, $this->generateTemporaryPassword($password) );
+			 if( $this->authenticate($toBeLoggedIn) ) {
+			 	$this->storeUserInSession($toBeLoggedIn->getUsername());
+			 	$this->storeTemporaryPassword( $toBeLoggedIn->getUsername(), $this->generateTemporaryPassword($toBeLoggedIn->getUsername()) );
 			 	return true;
 			 }
 
@@ -73,24 +73,27 @@ namespace model;
 		* Authenticates a user
 		* @return boolean
 		*/
-		private function authenticate($username, $password) {
-			$user = $this->UserCollection->getUser($username);
+		private function authenticate(Anonymous $toBeLoggedIn) {
 			
+
+			$user = $this->UserCollection->getUser($toBeLoggedIn->getUsername());
+
 			if( $user ) {
-				$login = password_verify($password, $user->getPassword());
+
+				$login = password_verify(  $toBeLoggedIn->getPassword(), $user->getPassword());
 
 				if($login) {
 					return true;
 				}
 				else {
-
+					$username = $toBeLoggedIn->getUsername();
 					$stmt = $this->UserCollection->db->db->prepare("SELECT temp_password FROM users WHERE username = :username");
 					$stmt->bindParam(':username', $username);
 					$stmt -> execute();
 
 					$temporaryPassword = $stmt->fetch();
 					$temporaryPassword = $temporaryPassword[0];
-					if ($temporaryPassword == $password) {
+					if ($temporaryPassword == $toBeLoggedIn->getPassword()) {
 						return true;
 					}
 				}

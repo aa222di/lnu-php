@@ -20,8 +20,6 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 $db = new model\Database( 'localhost', 'toeswade', $user, $pwd);
 
 
-
-
 //MAKE SURE ERRORS ARE SHOWN... MIGHT WANT TO TURN THIS OFF ON A PUBLIC SERVER
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
@@ -29,7 +27,10 @@ ini_set('display_errors', 'On');
 
 // Create user 
 $users = new model\UserCollection($db);
-$users->createNewUser('Admin', 'Password');
+
+$StandardUser = new model\Anonymous('Admin', 'Password');
+//$users->createNewUser($StandardUser);
+
 
 // Create the login object
 $loginModel = new model\Login($users);
@@ -37,14 +38,9 @@ $loginModel = new model\Login($users);
 
 
 //CREATE OBJECTS OF THE VIEWS
-$v = new view\LoginView($loginModel);
-$dtv = new view\DateTimeView();
 $lv = new view\LayoutView($loginModel);
 
-$loginController = new \controller\LoginController( $loginModel,$v);
 
-$message = $loginController->indexAction();
+$navController = new \controller\NavigationController( $lv ,$loginModel, $users);
 
-
-$lv->render( $v, $dtv, $message );
-
+$navController->indexAction();

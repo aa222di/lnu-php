@@ -17,14 +17,14 @@ namespace controller;
 		 *
 		 * Should be called from index to start app
 		 *
-		 * @return  string
+		 * @return  string or void
 		 */
 		public function indexAction() {
 
 			if( $this->loginView->doesUserWantToLogin() && !$this->loginModel->checkLoginStatus() ) {
 			
 				try {
-					$this->loginAction($this->loginView->getUsername(), $this->loginView->getPassword());
+					$this->loginAction();
 					return $this->loginView->loginMessage();
 				}
 				catch (\exceptions\FailedLoginException $e) {
@@ -50,16 +50,24 @@ namespace controller;
 		 *
 		 * @return boolean
 		 */
-		private function loginAction( $username, $password ) {
+		private function loginAction() {
 
-				if($this->loginModel->login( $username, $password )) {
-					return true;
+				$userToBeLoggedIn = $this->loginView->getUserCredentials();
+				if($userToBeLoggedIn) {
+
+					if($this->loginModel->login( $userToBeLoggedIn )) {
+						return true;
+					}
+					else {
+						throw new \exceptions\FailedLoginException('Wrong username or password');
+						
+					}
 				}
 				else {
-					throw new \exceptions\FailedLoginException('Wrong username or password');
-					
+					throw new \exceptions\FailedLoginException('User credentials are not complete');
+						
 				}
-	
+
 		}
 
 

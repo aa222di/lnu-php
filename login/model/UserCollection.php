@@ -25,6 +25,9 @@ namespace model;
     				echo $e->getMessage();//Remove or change message in production code
     			}
 
+    		$stmt = $this->db->db->prepare("SELECT username, password FROM users");
+    		$stmt -> execute();
+    		$this->users = $stmt->fetchAll(\PDO::FETCH_CLASS, '\model\User');
 		}
 
 		/**
@@ -33,22 +36,26 @@ namespace model;
 		* @param $password string
 		* @return void 
 		*/
-		public function createNewUser($username, $password) {
+		public function createNewUser(Anonymous $userToAdd) {
+			$username =$userToAdd->getUsername();
+			$password =$userToAdd->getPassword();
+			assert(isset($username) && isset($password));
 
-			if (!isset($username) || !isset($password)) {
-				throw new \Exception("Both password and username has to be set to create a new user");
-			}
-
-			$this->add(new User($username, $password));
+			$User = new User($username, $password);
+			$this->add($User);
 
 		}
+
 
 		/**
 		* @return obj User
 		*/
 		public function getUser($username) {
-			if (isset($this->users[$username])) {
-				return $this->users[$username];
+
+			foreach ($this->users as $key => $user) {
+				if($username == $user->getUsername()) {
+					return $user;
+				}
 			}
 		}
 
@@ -59,34 +66,25 @@ namespace model;
 			return $this->users;
 		}
 
-		/**
-		* Authenticates a user
-		* @return boolean
-		*/
-		public function authenticate($username, $password) {
-			$user = $this->getUser($username);
-			
-			if($user) {
-				return password_verify($password, $user->getPassword());
-			}
-			else {
-				return false;
-			}
-		}
 
 		/**
 		* Adds new user to collection
+		* @return boolean
 		*/
 		private function add( User $userToAdd) {
-			$this->users[$userToAdd->getUsername()] = $userToAdd;
-
+			
 			$username =$userToAdd->getUsername();
 			$password =$userToAdd->getPassword();
+			assert(isset($username) && isset($password));
 
-			$stmt = $this->db->db->prepare("SELECT * FROM users where username = ?");
-		
-			$stmt->execute([$username]);
-			$userExists = $stmt->fetch();
+			$userExists = false;
+			foreach ($this->users as $key => $user) {
+				if($username == $user->getUsername()) {
+					$userExists = true;
+
+				}
+			}
+
 			if(!$userExists) {
 			
 				$stmt = $this->db->db->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
@@ -94,6 +92,13 @@ namespace model;
 				$stmt->bindParam(':password', $password);
 				$stmt -> execute();
 
+				$this->users[] = $userToAdd;
+				return true;
+
+			}
+
+			else if($userExists) {
+				throw new \exceptions\FailedRegistrationException('User already exists');
 			}
 		}
 
