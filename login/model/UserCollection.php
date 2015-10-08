@@ -8,6 +8,8 @@ namespace model;
 		private $registrationSucceeded;
 		public $db;
 
+		private static $LastRegisteredUser = "UserCollection::LastRegisteredUser";
+
 		public function __construct( Database $db ) {
 			
 			// Connect to a database
@@ -42,10 +44,9 @@ namespace model;
 			$username =$userToAdd->getUsername();
 			$password =$userToAdd->getPassword();
 			assert(isset($username) && isset($password));
-
-			$User = new User($username, $password);
-			if($this->add($User)) {
+			if($this->add($userToAdd)) {
 				$this->registrationSucceeded = true;
+				$this->saveRegisteredUserInSession($userToAdd);
 				return true;
 			}
 
@@ -78,17 +79,36 @@ namespace model;
 			return $this->registrationSucceeded;
 		}
 
+		/**
+		* @return string or void
+		*/
+		public static function getRegisteredUser() {
+			if(isset($_SESSION[self::$LastRegisteredUser])) {
+				$ret = $_SESSION[self::$LastRegisteredUser];
+				unset($_SESSION[self::$LastRegisteredUser]);
+				return $ret;
+			}
+			return;
+		}
+
+		/**
+		* @return boolean 
+		*/
+		private function saveRegisteredUserInSession(Anonymous $userToSave) {
+			$_SESSION[self::$LastRegisteredUser] = $userToSave->getUsername();
+		}
+
 
 		/**
 		* Adds new user to collection
 		* @return boolean
 		*/
-		private function add( User $userToAdd) {
+		private function add( Anonymous $userToAdd) {
 			
 			$username =$userToAdd->getUsername();
 			$password =$userToAdd->getPassword();
 			assert(isset($username) && isset($password));
-			if(strlen($username) > 6 && strlen($password)) {
+			if(strlen($username) >= 3 && strlen($password) >= 6) {
 
 				$userExists = false;
 				foreach ($this->users as $key => $user) {
@@ -97,6 +117,10 @@ namespace model;
 
 					}
 				}
+
+				$newUser = new User($username, $password);
+				$username =$newUser->getUsername();
+				$password =$newUser->getPassword();
 
 				if(!$userExists) {
 				

@@ -14,11 +14,13 @@ class LoginView implements IView {
 
 
 	private $loginModel;
+	private $userCollection;
 	private $loggedInWithCookies = false;
 
 	public function __construct( \model\Login $loginModel) {
 		
 		$this->loginModel = $loginModel;
+		
 	}
 
 
@@ -290,6 +292,9 @@ class LoginView implements IView {
 
 		if (isset($_POST[self::$name])) {
 			$username = $_POST[self::$name];
+		}
+		else {
+			$username = \model\UserCollection::getRegisteredUser();
 		}
 
 		return '
