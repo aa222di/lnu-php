@@ -35,8 +35,9 @@ class LoginView implements IView {
 
 			if ( $this->doesUserWantToStayLoggedIn() ) {
 				$temp = $this->loginModel->getTemporaryPassword($_POST[self::$name] ,$_POST[self::$password]);
-				setcookie(self::$cookieName, $_POST[self::$name], time() + (30 * 24 * 60 * 60)); 
-				setcookie(self::$cookiePassword, $temp , time() + (30 * 24 * 60 * 60));
+				
+				$this->handleCookies(self::$cookieName, $_POST[self::$name], true);
+				$this->handleCookies(self::$cookiePassword, $temp, true);
 			}
 			
 			$response = $this->generateLogoutButtonHTML($message);
@@ -82,13 +83,11 @@ class LoginView implements IView {
 		if(isset($_POST[self::$logout])) {
 
 			if(isset($_COOKIE[self::$cookieName])) {
-				unset($_COOKIE[self::$cookieName]);
-				setcookie(self::$cookieName, "", time() - 3600);
+				$this->handleCookies(self::$cookieName);
 			}
 
 			if(isset($_COOKIE[self::$cookiePassword])) {
-				unset($_COOKIE[self::$cookiePassword]);
-			    setcookie(self::$cookiePassword, "", time() - 3600);
+				$this->handleCookies(self::$cookiePassword);
 			}
 
 			return true;
@@ -235,6 +234,8 @@ class LoginView implements IView {
 			}
 		}
 		elseif (isset($_COOKIE[self::$cookieName]) || isset($_COOKIE[self::$cookiePassword])) {
+			$this->handleCookies(self::$cookieName);
+			$this->handleCookies(self::$cookiePassword);
 			$message = "Wrong information in cookies";
 		}
 		else {
@@ -245,6 +246,24 @@ class LoginView implements IView {
 
 	}
 
+
+	/**
+	 * Sets or unsets cookies
+	 * @param $cookieLocation string. Array position in cookie
+	 * @param $set, boolean. True - set cookie, false unset cookie. Defaults to true
+	 * @param $value, string, only used to set cookie
+	 * @return  void
+	 */
+	public function handleCookies( $cookieLocation, $value=null, $set=false ) {
+
+		if($set) {
+			setcookie($cookieLocation, $value, time() + (30 * 24 * 60 * 60)); 
+		}
+		else {
+			unset($_COOKIE[$cookieLocation]);
+			setcookie($cookieLocation, "", time() - 3600);
+		}
+	}
 
 	/**
 	* Generate HTML code on the output buffer for the logout button

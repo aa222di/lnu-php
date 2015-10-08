@@ -102,7 +102,13 @@ namespace model;
 				$stmt = $this->db->db->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
 				$stmt->bindParam(':username', $username);
 				$stmt->bindParam(':password', $password);
-				$stmt -> execute();
+				try {
+					$stmt -> execute();
+				}
+				catch(\Exception $e) {
+					throw new \exceptions\FailedRegistrationException('User already exists');
+					
+				}
 
 				$this->users[] = $userToAdd;
 				return true;

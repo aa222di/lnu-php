@@ -33,7 +33,7 @@ namespace controller;
 			$view = null;
 			$dtv = new \view\DateTimeView();
 
-			if($this->navigationView->doesUserWantToReg()) {
+			if($this->navigationView->doesUserWantToSeeRegPage()) {
 				$view = new \view\RegistrationView();
 				$regController = new RegistrationController($this->userCollection, $view);
 
@@ -45,7 +45,7 @@ namespace controller;
 
 			}
 
-			else if($this->navigationView->doesUserWantToLogin()) {
+			else if($this->navigationView->doesUserWantToSeeLoginPage()) {
 				$view = new \view\LoginView($this->loginModel);
 				$loginController = new LoginController($this->loginModel, $view);
 

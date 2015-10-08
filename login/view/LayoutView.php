@@ -17,8 +17,7 @@ class LayoutView {
         </head>
         <body>
           <h1>Assignment 4</h1>
-          <p>' . $nav->response() . '</p>
-          ' . $this->renderIsLoggedIn() . '
+          ' . $this->renderIsLoggedIn($nav) . '
           
           <div class="container">
               ' . $v->response($message) . '
@@ -30,12 +29,12 @@ class LayoutView {
     ';
   }
   
-  private function renderIsLoggedIn() {
+  private function renderIsLoggedIn($nav) {
     if ($this->loginModel->checkLoginStatus()) {
       return '<h2>Logged in</h2>';
     }
     else {
-      return '<h2>Not logged in</h2>';
+      return '<p>' . $nav->response() . '</p><h2>Not logged in</h2>';
     }
   }
 }

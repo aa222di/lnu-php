@@ -53,7 +53,7 @@ class NavigationView {
 	 * To be called from controller
 	 * @return  boolean
 	 */
-	public function doesUserWantToReg() {
+	public function doesUserWantToSeeRegPage() {
 
 		$page = $this->checkURL();
 
@@ -70,7 +70,7 @@ class NavigationView {
 	 * To be called from controller
 	 * @return  boolean
 	 */
-	public function doesUserWantToLogin() {
+	public function doesUserWantToSeeLoginPage() {
 
 		$page = $this->checkURL();
 
