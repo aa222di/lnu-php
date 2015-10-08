@@ -14,5 +14,4 @@ I really liked to gather all variables like POST, COOKIE and GET in the view. Al
 
 
 ## Assignment 2
-
-
+I have tested the application manually and I pass all the tests but it won't work with the Automated Test Application.
