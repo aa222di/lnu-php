@@ -74,7 +74,9 @@ class RegistrationView implements IView {
 	private function getUsername() {
 
 		if(isset($_POST[self::$register]) && isset($_POST[self::$name])) {
-			return $_POST[self::$name];
+			if (strip_tags($_POST[self::$name]) == $_POST[self::$name]) {
+				return $_POST[self::$name];
+			}
 		}
 		return false;
 	}
@@ -121,9 +123,7 @@ class RegistrationView implements IView {
 		$message = '';
 
 		if(isset($_POST[self::$register])) {
-			var_dump($_POST[self::$name]);
 			if(strlen(trim($_POST[self::$name])) < 3) {
-				echo 'hello';
 				$message .= "Username has too few characters, at least 3 characters.</br>";
 
 				if(strlen(trim($_POST[self::$password])) < 6) {
@@ -135,6 +135,10 @@ class RegistrationView implements IView {
 			}
 			else if (trim($_POST[self::$password]) !== trim($_POST[self::$passwordRepeat])) {
 				$message = "Passwords do not match";
+			}
+
+			else if (strip_tags($_POST[self::$name]) !== $_POST[self::$name]) {
+				$message = "Username contains invalid characters,";
 			}
 
 			else {
@@ -170,7 +174,7 @@ class RegistrationView implements IView {
 					<p>' . $message . '</p>
 					
 					<p><label for="' . self::$name . '">Username :</label>
-					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $username . '" /></p>
+					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . strip_tags($username) . '" /></p>
 
 					<p><label for="' . self::$password . '">Password :</label>
 					<input type="password" id="' . self::$password . '" name="' . self::$password . '" /></p>

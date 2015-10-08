@@ -88,36 +88,41 @@ namespace model;
 			$username =$userToAdd->getUsername();
 			$password =$userToAdd->getPassword();
 			assert(isset($username) && isset($password));
+			if(strlen($username) > 6 && strlen($password)) {
 
-			$userExists = false;
-			foreach ($this->users as $key => $user) {
-				if($username == $user->getUsername()) {
-					$userExists = true;
+				$userExists = false;
+				foreach ($this->users as $key => $user) {
+					if($username == $user->getUsername()) {
+						$userExists = true;
+
+					}
+				}
+
+				if(!$userExists) {
+				
+					$stmt = $this->db->db->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
+					$stmt->bindParam(':username', $username);
+					$stmt->bindParam(':password', $password);
+					try {
+						$stmt -> execute();
+					}
+					catch(\Exception $e) {
+						throw new \exceptions\FailedRegistrationException('User already exists');
+						
+					}
+
+					$this->users[] = $userToAdd;
+					return true;
 
 				}
-			}
 
-			if(!$userExists) {
-			
-				$stmt = $this->db->db->prepare("INSERT INTO users (username, password) VALUES (:username, :password)");
-				$stmt->bindParam(':username', $username);
-				$stmt->bindParam(':password', $password);
-				try {
-					$stmt -> execute();
-				}
-				catch(\Exception $e) {
+				else if($userExists) {
 					throw new \exceptions\FailedRegistrationException('User already exists');
-					
 				}
-
-				$this->users[] = $userToAdd;
-				return true;
-
 			}
 
-			else if($userExists) {
-				throw new \exceptions\FailedRegistrationException('User already exists');
-			}
+			else throw new \exceptions\FailedRegistrationException('Too short password or username');
+
 		}
 
 		
