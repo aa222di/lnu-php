@@ -121,10 +121,16 @@ class RegistrationView implements IView {
 		$message = '';
 
 		if(isset($_POST[self::$register])) {
+			var_dump($_POST[self::$name]);
 			if(strlen(trim($_POST[self::$name])) < 3) {
+				echo 'hello';
 				$message .= "Username has too few characters, at least 3 characters.</br>";
+
+				if(strlen(trim($_POST[self::$password])) < 6) {
+					$message .= "Password has too few characters, at least 6 characters.";
+				}
 			}
-			if(strlen(trim($_POST[self::$password])) < 6) {
+			else if(strlen(trim($_POST[self::$password])) < 6) {
 				$message .= "Password has too few characters, at least 6 characters.";
 			}
 			else if (trim($_POST[self::$password]) !== trim($_POST[self::$passwordRepeat])) {
