@@ -51,7 +51,7 @@ namespace controller;
 
 				$message = $loginController->indexAction();
 
-				if ($this->loginModel->checkLoginStatus()) {
+				if ($this->loginModel->checkLoginStatus() && isset($message)) {
 					$this->navigationView->redirectTo($message);
 				}	
 			}
